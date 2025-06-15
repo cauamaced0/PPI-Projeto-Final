@@ -1,0 +1,29 @@
+{
+  "name": "ppi-projeto-final-1",
+  "version": "1.0.0",
+  "description": "Projeto final para a materia de programaçao para internet",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cauamaced0/PPI-Projeto-Final.git"
+  },
+  "keywords": [
+    "javasCript",
+    "htpp",
+    "node"
+  ],
+  "author": "cauã_Maced0",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cauamaced0/PPI-Projeto-Final/issues"
+  },
+  "homepage": "https://github.com/cauamaced0/PPI-Projeto-Final#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
