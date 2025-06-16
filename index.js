@@ -86,3 +86,9 @@ app.use(express.static('public'));
 app.listen(port, host, ()=> {
     console.log("Servidor escutando na porta 4200")
 });
+
+console.log(`──▄────▄▄▄▄▄▄▄────▄───
+─▀▀▄─▄█████████▄─▄▀▀──
+─────██─▀███▀─██──────
+───▄─▀████▀████▀─▄────
+─▀█────██▀█▀██────█▀── caua_maced0`)
