@@ -16,35 +16,40 @@ app.get("/",(requisicao,resposta)=>{
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    <title>Inicio</title>
+    <title>Login</title>
     </head>
     <body>
     <nav class="navbar bg-body-tertiary">
-        <div class="container-fluid">
-             <a class="navbar-brand" href="/">
-                <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-         Inicio
-            </a>
-        </div>
-    </nav>
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">
+      <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+      Inicio
+    </a>
+    <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+                <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+        </li>
+     </ul>   
+  </div>
+</nav>
     <br/>
     <div class="container  mt-5">
-    <form method="POST" action="/Menu"  class="w-50 mx-auto border rounded shadow p-4">
+    <form method="POST" action="/"  class="w-50 mx-auto border rounded shadow p-4">
     <h2 class="text-center mb-4">Login</h1>
         <div class="mb-3">
             <label for="exampleInputnome1" class="form-label">Nome</label>
-            <input type="name" name="nome" class="form-control" id="nome" required>
+            <input type="name" name="nome" class="form-control" id="nome" >
         </div> 
         <div class="mb-3">
             <label for="exampleInputEmail1" class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" required>
+            <input type="email" name="email" class="form-control" id="email" aria-describedby="emailHelp" >
             <div id="emailHelp" class="form-text">Nós nunca compartilharemos o seu email com outros.</div>
         </div>
         <div class="mb-3">
             <label for="exampleInputPassword1" class="form-label">Senha</label>
             <input type="password" name="senha" class="form-control" id="senha" required>
         </div>
-        <button type="submit" class="btn btn-primary">Enviar</button>
+        <button type="submit" class="btn btn-primary">Entrar</button>
     </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
@@ -89,7 +94,7 @@ app.get("/",(requisicao,resposta)=>{
       resposta.end();      
     })
 
-app.post("/Menu",(requisicao, resposta)=>{
+app.post("/",(requisicao, resposta)=>{
     const nome = requisicao.body.nome;
     const email = requisicao.body.email;
     const senha = requisicao.body.senha;
@@ -98,7 +103,7 @@ app.post("/Menu",(requisicao, resposta)=>{
         nome: nome,
         email: email
     });
-    resposta.redirect("/listaUsuarios");
+    resposta.redirect("/Menu");
         }
         else{
         
@@ -126,14 +131,14 @@ app.post("/Menu",(requisicao, resposta)=>{
         if(!nome){
             conteudo = conteudo + `
             <label for="exampleInputnome1" class="form-label">Nome</label>
-            <input type="name" name="nome" class="form-control" id="nome"  required>
+            <input type="name" name="nome" class="form-control" id="nome"  >
             <span class="ivalid-feedback">Por favor informe o nome</span>`
         }
         else
         {
             conteudo = conteudo + `
             <label for="exampleInputnome1" class="form-label">Nome</label>
-            <input type="name" name="nome" class="form-control" id="nome" value="${nome}" required>
+            <input type="name" name="nome" class="form-control" id="nome" value="${nome}" >
             `
         }
             conteudo = conteudo +`</div> 
@@ -142,13 +147,13 @@ app.post("/Menu",(requisicao, resposta)=>{
             {
                 conteudo = conteudo+`
                 <label for="exampleInputEmail1" class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" id="email"  aria-describedby="emailHelp" required>
+                <input type="email" name="email" class="form-control" id="email"  aria-describedby="emailHelp" >
                 <span class="ivalid-feedback">Por favor informe o email</span>`   
             }
             else{
                 conteudo = conteudo + `
                 <label for="exampleInputEmail1" class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" id="email" value="${email}" aria-describedby="emailHelp" required>    
+                <input type="email" name="email" class="form-control" id="email" value="${email}" aria-describedby="emailHelp" >    
                 `
             }
             conteudo = conteudo + `<div id="emailHelp" class="form-text">Nós nunca compartilharemos o seu email com outros.</div>
@@ -213,6 +218,11 @@ app.get("/listaUsuarios",(requisicao,resposta) =>{
 resposta.send(conteudo);
     resposta.end();
 });
+
+app.get("/logout", (requisicao,resposta) =>{
+    resposta.send("<p>Voce saiu do sistema</p>");
+    resposta.end();
+})
 
 app.use(express.static('public'));
 
