@@ -19,6 +19,8 @@ app.use(session({
     secure: false
 }));
 
+app.use(cookieParser());
+
 app.get("/", (requisicao,resposta)=>{
     resposta.send(
         `<html lang="pt-br">
@@ -35,9 +37,6 @@ app.get("/", (requisicao,resposta)=>{
       <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
       Inicio
     </a>
-        <div class="d-flex align-items-center">
-            <a class="navbar-brand" href="/listaUsuarios">Ususarios Logados</a>
-            </div>
     <ul class="navbar-nav ms-auto">
         <li class="nav-item">
                 <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
@@ -73,6 +72,7 @@ app.get("/", (requisicao,resposta)=>{
     });
 
     app.get("/Menu", verificarAutenticacao, (requisicao,resposta)=>{
+        const ultimoLogin = requisicao.cookies.ultimoLogin;
         resposta.send(`<html lang="pt-br">
     <head>
     <meta charset="UTF-8">
@@ -87,25 +87,23 @@ app.get("/", (requisicao,resposta)=>{
             <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
             Inicio
             </a>
-                <div class="d-flex align-items-center">
-                    <a class="navbar-brand" href="/listaUsuarios">Ususarios Logados</a>
-                    </div>
+                     <span class="navbar-text">${ultimoLogin?"Ultimo acesso: " +ultimoLogin:""}</span> 
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                         <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
                 </li>
-            </ul>   
+            </ul>            
         </div>
         </nav>
         <br/>
         <br>  
         <div class="container w-75 mt-10">
         <p><b>Por favor, Selecione a opção desejada:</b></p>
-           <form action="/cadastroJogador" method="GET" class="row g-3 border p-3">
-                <button type="submit" class="btn btn-primary btn-lg">Cadastrar Jogador</button>
+           <form action="/cadastrarEquipe" method="GET" class="row g-3 border p-3">
+                <button type="submit" class="btn btn-primary btn-lg">Cadastro de Equipes</button>
             </form>
-            <form action="/cadastroEquipe" method="GET" class="row g-3 border p-3">
-                <button type="submit" class="btn btn-primary btn-lg">Cadastrar Equipe</button>
+            <form action="/cadastrarJogador" method="GET" class="row g-3 border p-3">
+                <button type="submit" class="btn btn-primary btn-lg">Cadastro de Jogadores</button>
             </form>
          </div>   
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
@@ -121,6 +119,8 @@ app.post("/", (requisicao, resposta)=>{
     const senha = requisicao.body.senha;
     if(nome == "admin"&&email &&senha=="123"){
         requisicao.session.logado = true;
+        const dataHoraAtual = new Date();
+        resposta.cookie('ultimoLogin', dataHoraAtual.toLocaleString(), { maxAge: 1000 *60 * 30});
         resposta.redirect("/Menu");
     listaUsuarios.push({
         nome: nome,
@@ -134,7 +134,7 @@ app.post("/", (requisicao, resposta)=>{
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    <title>Inicio</title>
+    <title>Login</title>
     </head>
     <body>
     <nav class="navbar bg-body-tertiary">
@@ -143,9 +143,6 @@ app.post("/", (requisicao, resposta)=>{
         <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
         Inicio
         </a>
-            <div class="d-flex align-items-center">
-                <a class="navbar-brand" href="/listaUsuarios">Ususarios Logados</a>
-                </div>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item">
                     <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
@@ -206,15 +203,19 @@ app.post("/", (requisicao, resposta)=>{
 
 app.get("/listaUsuarios", verificarAutenticacao ,(requisicao,resposta) =>{
     let conteudo=`<html lang="pt-br">
+    <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+                <title>Cadastrar Jogador</title>
+            </head>
+            <body>
     <nav class="navbar bg-body-tertiary">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="/">
         <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
         Inicio
         </a>
-            <div class="d-flex align-items-center">
-                <a class="navbar-brand" href="/listaUsuarios">Ususarios Logados</a>
-                </div>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item">
                     <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
@@ -247,6 +248,38 @@ app.get("/listaUsuarios", verificarAutenticacao ,(requisicao,resposta) =>{
     </body>
     </html>`
 resposta.send(conteudo);
+    resposta.end();
+});
+
+app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
+    resposta.send(
+        `<html lang="pt-br">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+                <title>Cadastrar Jogador</title>
+            </head>
+            <body>
+                <nav class="navbar bg-body-tertiary">
+                    <div class="container-fluid">
+                     <a class="navbar-brand d-flex align-items-center" href="/">
+                         <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
+                     Inicio
+                     </a>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                            <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+                    </li>
+                </ul>   
+            </div>
+            </nav>
+        
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    </body>
+    </html>`)
     resposta.end();
 });
 
