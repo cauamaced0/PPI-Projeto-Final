@@ -3,6 +3,7 @@ import express from "express";
 const port = 4200;
 const host = "0.0.0.0";
 var listaUsuarios = [];
+var logado = false;
 
 const app = express();
 
@@ -21,10 +22,13 @@ app.get("/",(requisicao,resposta)=>{
     <body>
     <nav class="navbar bg-body-tertiary">
   <div class="container-fluid">
-    <a class="navbar-brand" href="/">
-      <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
       Inicio
     </a>
+        <div class="d-flex align-items-center">
+            <a class="navbar-brand" href="/listaUsuarios">Ususarios Logados</a>
+            </div>
     <ul class="navbar-nav ms-auto">
         <li class="nav-item">
                 <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
@@ -70,12 +74,20 @@ app.get("/",(requisicao,resposta)=>{
     <body>
     <nav class="navbar bg-body-tertiary">
         <div class="container-fluid">
-             <a class="navbar-brand" href="/">
-                <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-         Inicio
+            <a class="navbar-brand d-flex align-items-center" href="/">
+            <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
+            Inicio
             </a>
+                <div class="d-flex align-items-center">
+                    <a class="navbar-brand" href="/listaUsuarios">Ususarios Logados</a>
+                    </div>
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                        <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+                </li>
+            </ul>   
         </div>
-    </nav>
+        </nav>
         <br/>
         <br>  
         <div class="container w-75 mt-10">
@@ -116,23 +128,31 @@ app.post("/",(requisicao, resposta)=>{
     </head>
     <body>
     <nav class="navbar bg-body-tertiary">
-        <div class="container-fluid">
-             <a class="navbar-brand" href="/">
-                <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-         Inicio
-            </a>
-        </div>
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
+        Inicio
+        </a>
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand" href="/listaUsuarios">Ususarios Logados</a>
+                </div>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                    <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+            </li>
+        </ul>   
+    </div>
     </nav>
     <br/>
     <div class="container  mt-5">
-    <form method="POST" action="/Menu"  class="w-50 mx-auto border rounded shadow p-4">
+    <form method="POST" action="/"  class="w-50 mx-auto border rounded shadow p-4">
     <h2 class="text-center mb-4">Login</h1>
         <div class="mb-3">`
         if(!nome){
             conteudo = conteudo + `
             <label for="exampleInputnome1" class="form-label">Nome</label>
             <input type="name" name="nome" class="form-control" id="nome"  >
-            <span class="ivalid-feedback">Por favor informe o nome</span>`
+            <span class="text-danger">Por favor informe o nome!</span>`
         }
         else
         {
@@ -148,7 +168,7 @@ app.post("/",(requisicao, resposta)=>{
                 conteudo = conteudo+`
                 <label for="exampleInputEmail1" class="form-label">Email</label>
                 <input type="email" name="email" class="form-control" id="email"  aria-describedby="emailHelp" >
-                <span class="ivalid-feedback">Por favor informe o email</span>`   
+                <span class="text-danger">Por favor informe o email!</span>`   
             }
             else{
                 conteudo = conteudo + `
@@ -176,20 +196,21 @@ app.post("/",(requisicao, resposta)=>{
 
 app.get("/listaUsuarios",(requisicao,resposta) =>{
     let conteudo=`<html lang="pt-br">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-        <title>Menu</title>
-    </head>
-    <body>
     <nav class="navbar bg-body-tertiary">
-        <div class="container-fluid">
-             <a class="navbar-brand" href="/">
-                <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
-         Inicio
-            </a>
-        </div>
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
+        Inicio
+        </a>
+            <div class="d-flex align-items-center">
+                <a class="navbar-brand" href="/listaUsuarios">Ususarios Logados</a>
+                </div>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                    <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+            </li>
+        </ul>   
+    </div>
     </nav>
     <div class="container w-75 mb-10 mt-10">
         <table class="table table-striped table-hover">

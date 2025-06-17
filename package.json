@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/cauamaced0/PPI-Projeto-Final#readme",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-session": "^1.18.1"
   }
 }
