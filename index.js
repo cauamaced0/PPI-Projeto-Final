@@ -1,16 +1,25 @@
 import express from "express";
+import session from "express-session";
+import cookieParser from "cookie-parser";
 
 const port = 4200;
 const host = "0.0.0.0";
 var listaUsuarios = [];
-var logado = false;
 
 const app = express();
 
 app.use(express.urlencoded({extended: true}))
 
+app.use(session({
+    secret: "Ch4V3$3cR3T4",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 *60 * 30}, // 1000milisegundos = 1 segundo * 60= 60 segundos= 1 minuto *30 = 30 min
+    httpOnly: true,
+    secure: false
+}));
 
-app.get("/",(requisicao,resposta)=>{
+app.get("/", (requisicao,resposta)=>{
     resposta.send(
         `<html lang="pt-br">
     <head>
@@ -63,7 +72,7 @@ app.get("/",(requisicao,resposta)=>{
     resposta.end();
     });
 
-    app.get("/Menu",(requisicao,resposta)=>{
+    app.get("/Menu", verificarAutenticacao, (requisicao,resposta)=>{
         resposta.send(`<html lang="pt-br">
     <head>
     <meta charset="UTF-8">
@@ -106,16 +115,17 @@ app.get("/",(requisicao,resposta)=>{
       resposta.end();      
     })
 
-app.post("/",(requisicao, resposta)=>{
+app.post("/", (requisicao, resposta)=>{
     const nome = requisicao.body.nome;
     const email = requisicao.body.email;
     const senha = requisicao.body.senha;
-    if(nome&&email){
+    if(nome == "admin"&&email &&senha=="123"){
+        requisicao.session.logado = true;
+        resposta.redirect("/Menu");
     listaUsuarios.push({
         nome: nome,
         email: email
     });
-    resposta.redirect("/Menu");
         }
         else{
         
@@ -194,7 +204,7 @@ app.post("/",(requisicao, resposta)=>{
         }
 }); 
 
-app.get("/listaUsuarios",(requisicao,resposta) =>{
+app.get("/listaUsuarios", verificarAutenticacao ,(requisicao,resposta) =>{
     let conteudo=`<html lang="pt-br">
     <nav class="navbar bg-body-tertiary">
     <div class="container-fluid">
@@ -240,9 +250,21 @@ resposta.send(conteudo);
     resposta.end();
 });
 
+function verificarAutenticacao(requisicao,resposta, next)
+{
+    if(requisicao.session.logado)
+        {
+            next();
+        }
+    else
+    {
+        resposta.redirect("/");
+    }
+};
+
 app.get("/logout", (requisicao,resposta) =>{
-    resposta.send("<p>Voce saiu do sistema</p>");
-    resposta.end();
+    requisicao.session.destroy();
+    resposta.redirect("/");
 })
 
 app.use(express.static('public'));
