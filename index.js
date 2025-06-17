@@ -28,8 +28,9 @@ app.get("/",(requisicao,resposta)=>{
         </div>
     </nav>
     <br/>
-    <div class="container w-75 mt-20">
-    <form method="POST" action="/Menu"  class="row g-3 border p-3">
+    <div class="container  mt-5">
+    <form method="POST" action="/Menu"  class="w-50 mx-auto border rounded shadow p-4">
+    <h2 class="text-center mb-4">Login</h1>
         <div class="mb-3">
             <label for="exampleInputnome1" class="form-label">Nome</label>
             <input type="name" name="nome" class="form-control" id="nome" required>
@@ -92,12 +93,80 @@ app.post("/Menu",(requisicao, resposta)=>{
     const nome = requisicao.body.nome;
     const email = requisicao.body.email;
     const senha = requisicao.body.senha;
+    if(nome&&email){
     listaUsuarios.push({
         nome: nome,
         email: email
     });
-    resposta.redirect("/listaUsuario");
+    resposta.redirect("/listaUsuarios");
+        }
+        else{
+        
+       let conteudo = `<html lang="pt-br">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+    <title>Inicio</title>
+    </head>
+    <body>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+             <a class="navbar-brand" href="/">
+                <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top">
+         Inicio
+            </a>
+        </div>
+    </nav>
+    <br/>
+    <div class="container  mt-5">
+    <form method="POST" action="/Menu"  class="w-50 mx-auto border rounded shadow p-4">
+    <h2 class="text-center mb-4">Login</h1>
+        <div class="mb-3">`
+        if(!nome){
+            conteudo = conteudo + `
+            <label for="exampleInputnome1" class="form-label">Nome</label>
+            <input type="name" name="nome" class="form-control" id="nome"  required>
+            <span class="ivalid-feedback">Por favor informe o nome</span>`
+        }
+        else
+        {
+            conteudo = conteudo + `
+            <label for="exampleInputnome1" class="form-label">Nome</label>
+            <input type="name" name="nome" class="form-control" id="nome" value="${nome}" required>
+            `
+        }
+            conteudo = conteudo +`</div> 
+        <div class="mb-3">`
+        if(!email)
+            {
+                conteudo = conteudo+`
+                <label for="exampleInputEmail1" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" id="email"  aria-describedby="emailHelp" required>
+                <span class="ivalid-feedback">Por favor informe o email</span>`   
+            }
+            else{
+                conteudo = conteudo + `
+                <label for="exampleInputEmail1" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" id="email" value="${email}" aria-describedby="emailHelp" required>    
+                `
+            }
+            conteudo = conteudo + `<div id="emailHelp" class="form-text">Nós nunca compartilharemos o seu email com outros.</div>
+        </div>
+        <div class="mb-3">
+            <label for="exampleInputPassword1" class="form-label">Senha</label>
+            <input type="password" name="senha" class="form-control" id="senha" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    </body>
+    </html>`
+        
+    resposta.send(conteudo);
     resposta.end();
+        }
 }); 
 
 app.get("/listaUsuarios",(requisicao,resposta) =>{
@@ -128,13 +197,13 @@ app.get("/listaUsuarios",(requisicao,resposta) =>{
                 <tbody>`;
             for(let i= 0; i<listaUsuarios.length; i++)
                 {
-                    counteudo = conteudo+ `
+                    conteudo = conteudo+ `
                     <tr>
                         <td>${listaUsuarios[i].nome}</td>
                         <td>${listaUsuarios[i].email}</td>`
                 }
 
-        counteudo = conteudo + `</tbody>
+        conteudo = conteudo + `</tbody>
                 </table>
             </div>
         </body>
@@ -143,7 +212,7 @@ app.get("/listaUsuarios",(requisicao,resposta) =>{
     </html>`
 resposta.send(conteudo);
     resposta.end();
-})
+});
 
 app.use(express.static('public'));
 
