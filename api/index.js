@@ -529,11 +529,11 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         if(!equipe)
             {
                 conteudo = conteudo + `
+                <div class="col-md-4">
                 <label for="equip" class="form-label">Equip:</label>
                 <span class="text-danger">Por favor insira uma equipe!</span>
                 <select id="equipe" name="equipe" class="form-select" >
-                <option selected>Choose...</option>
-                <option>...</option>
+                ${opcoesEquipes}
                 </select>
                 `
             }
@@ -541,9 +541,8 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         {
             conteudo = conteudo + `
             <label for="equip" class="form-label">Equip:</label>
-                <select id="equipe" name="equipe" class="form-select" value="${equipe}">
-                <option selected>Choose...</option>
-                <option>...</option>
+                <select id="equipe" name="equipe" class="form-select" >
+                ${opcoesEquipes}
                 </select>
             `
         }
