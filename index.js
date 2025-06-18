@@ -204,7 +204,7 @@ app.get("/listaUsuarios", verificarAutenticacao ,(requisicao,resposta) =>{
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-                <title>Lista de Usuarios</title>
+                <title>Lista de Usuarios por Equipe</title>
             </head>
             <body>
     <nav class="navbar bg-body-tertiary">
@@ -220,27 +220,46 @@ app.get("/listaUsuarios", verificarAutenticacao ,(requisicao,resposta) =>{
         </ul>   
     </div>
     </nav>
-    <div class="container w-75 mb-10 mt-10">
-        <table class="table table-striped table-hover">
-            <thead>
+   <div class="container mt-4">
+        <h1 class="mb-4">Jogadores por Equipe</h1>`;
+
+    for (let i = 0; i < listaEquipes.length; i++) {
+        const nomeEquipe = listaEquipes[i].equipe;
+        const jogadores = listaUsuarios.filter(j => j.equipe === nomeEquipe);
+
+        conteudo = conteudo + `
+        <h3 class="mt-4">${nomeEquipe}</h3>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
                 <tr>
-                    <th scope="col">Nome</th>
-                    <th scope="col"> n° camisa</th>
-                    <th scope="col"> posição</th>
+                    <th>Nome</th>
+                    <th>N° Camisa</th>
+                    <th>Posição</th>
                 </tr>
             </thead>
-                <tbody>`;
-            for(let i= 0; i<listaUsuarios.length; i++)
-                {
-                    conteudo = conteudo+ `
-                    <tr>
-                        <td>${listaUsuarios[i].nomeJ}</td>
-                        <td>${listaUsuarios[i].numCamisa}</td>
-                        <td>${listaUsuarios[i].posicao}</td>`
-                }
+            <tbody>`;
 
-        conteudo = conteudo + `</tbody>
-         </table>
+        if (jogadores.length === 0) {
+            conteudo += `
+                <tr>
+                    <td colspan="3" class="text-center text-muted">Nenhum jogador cadastrado ainda.</td>
+                </tr>`;
+        } else {
+            for (let j = 0; j < jogadores.length; j++) {
+                conteudo += `
+                <tr>
+                    <td>${jogadores[j].nomeJ}</td>
+                    <td>${jogadores[j].numCamisa}</td>
+                    <td>${jogadores[j].posicao}</td>
+                </tr>`;
+            }
+        }
+
+        conteudo = conteudo + `
+            </tbody>
+        </table>`;
+    }
+        conteudo = conteudo + `
           <div class="d-flex justify-content-between mt-4">
              <a href="/cadastrarJogador" class="btn btn-primary">Cadastrar Novamente</a>
              <a href="/Menu" class="btn btn-secondary">Voltar ao Menu</a>
@@ -255,6 +274,11 @@ resposta.send(conteudo);
 });
 
 app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
+    let opcoesEquipes = `<option selected disabled>Selecione uma equipe...</option>`;
+    for (let i = 0; i < listaEquipes.length; i++) {
+        opcoesEquipes += `<option value="${listaEquipes[i].equipe}">${listaEquipes[i].equipe}</option>`;
+    }
+
     resposta.send(
         `<html lang="pt-br">
             <head>
@@ -285,7 +309,7 @@ app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
             </div>
             <div class="col-md-6">
                 <label for="inputnum4" class="form-label">número do jogador (n° da camisa)</label>
-                <input type="number" nome="numCamisa" class="form-control" id="numCamisa" >
+                <input type="number" name="numCamisa" class="form-control" id="numCamisa" >
             </div>
             <div class="col-12">
                 <label for="date" class="form-label">Data de Nascimento:</label>
@@ -306,8 +330,7 @@ app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
             <div class="col-md-4">
                 <label for="equip" class="form-label">Equip:</label>
                 <select id="equipe" name="equipe" class="form-select" >
-                <option selected>Choose...</option>
-                <option>...</option>
+                ${opcoesEquipes}
                 </select>
             </div>
             <br>
@@ -334,12 +357,32 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
     const sexo = requisicao.body.sexo;
     const posicao = requisicao.body.posicao;
     const equipe = requisicao.body.equipe;
+    const jogadoresDaEquipe = listaUsuarios.filter(j => j.equipe === equipe);
+    if (jogadoresDaEquipe.length >= 6) {
+        return resposta.send(`
+            <html lang="pt-br">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Limite Atingido</title>
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+                </head>
+                <body class="container mt-5">
+                    <div class="alert alert-danger">
+                        A equipe Selecionada já possui 6 jogadores cadastrados. 
+                        Não é possível adicionar mais.
+                    </div>
+                    <a href="/cadastrarJogador" class="btn btn-primary mt-3">Voltar</a>
+                </body>
+            </html>
+        `);
+    }
     if(nomeJ && !isNaN(numeroJ) && dataNascimento > dataLimiteInferior &&
     dataNascimento < dataLimiteSuperior && Altur && sexo && posicao && equipe){
         listaUsuarios.push({
         nomeJ: nomeJ,
         numCamisa: numJ,
-        posicao:posicao
+        posicao:posicao,
+        equipe: equipe
     });
     resposta.redirect("/listaUsuarios");
         }
@@ -701,9 +744,8 @@ app.get("/listaEquipes", verificarAutenticacao ,(requisicao,resposta) =>{
                 {
                     conteudo = conteudo+ `
                     <tr>
-                        <td>${listaEquipes[i].nomeJ}</td>
-                        <td>${listaEquipes[i].numCamisa}</td>
-                        <td>${listaEquipes[i].posicao}</td>`
+                        <td>${listaEquipes[i].equipe}</td>
+                        <td>${listaEquipes[i].nomeTec}</td>`
                 }
 
         conteudo = conteudo + `</tbody>
