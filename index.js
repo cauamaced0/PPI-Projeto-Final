@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 const port = 4200;
 const host = "0.0.0.0";
 var listaUsuarios = [];
+var listaEquipes = [];
 
 const app = express();
 
@@ -39,7 +40,7 @@ app.get("/", (requisicao,resposta)=>{
     </a>
     <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-                <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+                <a class="nav-link btn btn-outline-danger rounded-pill px-3" href="/logout">Sair</a>
         </li>
      </ul>   
   </div>
@@ -141,7 +142,7 @@ app.post("/", (requisicao, resposta)=>{
         </a>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-                    <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+                    <a class="nav-link btn btn-outline-danger rounded-pill px-3" href="/logout">Sair</a>
             </li>
         </ul>   
     </div>
@@ -203,7 +204,7 @@ app.get("/listaUsuarios", verificarAutenticacao ,(requisicao,resposta) =>{
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-                <title>Cadastrar Jogador</title>
+                <title>Lista de Usuarios</title>
             </head>
             <body>
     <nav class="navbar bg-body-tertiary">
@@ -214,7 +215,7 @@ app.get("/listaUsuarios", verificarAutenticacao ,(requisicao,resposta) =>{
         </a>
         <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-                    <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+                    <a class="nav-link btn btn-outline-danger rounded-pill px-3"  href="/logout">Sair</a>
             </li>
         </ul>   
     </div>
@@ -224,7 +225,8 @@ app.get("/listaUsuarios", verificarAutenticacao ,(requisicao,resposta) =>{
             <thead>
                 <tr>
                     <th scope="col">Nome</th>
-                    <th scope="col"> email</th>
+                    <th scope="col"> n° camisa</th>
+                    <th scope="col"> posição</th>
                 </tr>
             </thead>
                 <tbody>`;
@@ -232,12 +234,17 @@ app.get("/listaUsuarios", verificarAutenticacao ,(requisicao,resposta) =>{
                 {
                     conteudo = conteudo+ `
                     <tr>
-                        <td>${listaUsuarios[i].nome}</td>
-                        <td>${listaUsuarios[i].email}</td>`
+                        <td>${listaUsuarios[i].nomeJ}</td>
+                        <td>${listaUsuarios[i].numCamisa}</td>
+                        <td>${listaUsuarios[i].posicao}</td>`
                 }
 
         conteudo = conteudo + `</tbody>
-                </table>
+         </table>
+          <div class="d-flex justify-content-between mt-4">
+             <a href="/cadastrarJogador" class="btn btn-primary">Cadastrar Novamente</a>
+             <a href="/Menu" class="btn btn-secondary">Voltar ao Menu</a>
+         </div>
             </div>
         </body>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
@@ -265,7 +272,7 @@ app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
                      </a>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                            <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+                            <a class="nav-link btn btn-outline-danger rounded-pill px-3" href="/logout">Sair</a>
                     </li>
                 </ul>   
             </div>
@@ -278,7 +285,7 @@ app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
             </div>
             <div class="col-md-6">
                 <label for="inputnum4" class="form-label">número do jogador (n° da camisa)</label>
-                <input type="text" nome="numCamisa" class="form-control" id="numCamisa" >
+                <input type="number" nome="numCamisa" class="form-control" id="numCamisa" >
             </div>
             <div class="col-12">
                 <label for="date" class="form-label">Data de Nascimento:</label>
@@ -305,7 +312,7 @@ app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
             </div>
             <br>
             <div class="col-12">
-                <button type="submit" class="btn btn-primary">Sign in</button>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
             </div>
         </form>
 
@@ -318,17 +325,23 @@ app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
 app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
     const nomeJ = requisicao.body.nomeJ;
     const numJ = requisicao.body.numCamisa;
+    const numeroJ= Number(numJ);
     const dataN = requisicao.body.data;
+    let dataLimiteInferior = new Date("1955-12-31");
+    let dataLimiteSuperior = new Date("2025-06-18");
+    let dataNascimento = new Date(dataN);
     const Altur = requisicao.body.Altura;
     const sexo = requisicao.body.sexo;
     const posicao = requisicao.body.posicao;
     const equipe = requisicao.body.equipe;
-    if(nomeJ && numJ && dataN > "31-12-1955" &&dataN < "18-6-2025" && Altura && Altur && sexo && posicao && equipe){
-        resposta.redirect("/listaUsuarios");
+    if(nomeJ && !isNaN(numeroJ) && dataNascimento > dataLimiteInferior &&
+    dataNascimento < dataLimiteSuperior && Altur && sexo && posicao && equipe){
         listaUsuarios.push({
-        nome: nome,
-        email: email
+        nomeJ: nomeJ,
+        numCamisa: numJ,
+        posicao:posicao
     });
+    resposta.redirect("/listaUsuarios");
         }
      else
      {
@@ -348,7 +361,7 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
                      </a>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                            <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+                            <a class="nav-link btn btn-outline-danger rounded-pill px-3" href="/logout">Sair</a>
                     </li>
                 </ul>   
             </div>
@@ -375,11 +388,11 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
             </div>
             <div class="col-md-6">
             `
-            if(!numJ|| isNaN(numJ))
+            if(!numeroJ|| isNaN(numeroJ))
                 {
                     conteudo = conteudo + `
                     <label for="inputnum4" class="form-label">número do jogador (n° da camisa)</label>
-                    <input type="text" name="numCamisa" class="form-control" id="numCamisa" >
+                    <input type="number" name="numCamisa" class="form-control" id="numCamisa" >
                     <span class="text-danger">Por favor informe o numero da camisa!</span>
                     `
                 }
@@ -387,14 +400,14 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
             {
                 conteudo = conteudo + `
                 <label for="inputnum4" class="form-label">número do jogador (n° da camisa)</label>
-                <input type="text" name="numCamisa" class="form-control" id="numCamisa" value="${numJ}" >
+                <input type="number" name="numCamisa" class="form-control" id="numCamisa" value="${numJ}" >
                 `
             }
             conteudo = conteudo + `
             </div>
             <div class="col-12">
             `
-        if(!dataN)
+        if(!dataN || dataN > "31-12-1955" || dataN < "18-6-2025")
             {
                 conteudo = conteudo + `
                 <label for="date" class="form-label">Data de Nascimento:</label>
@@ -406,7 +419,7 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         {
             conteudo = conteudo + `
             <label for="date" class="form-label">Data de Nascimento:</label>
-            <input type="date" name="data" class="form-control" id="data">
+            <input type="date" name="data" class="form-control" id="data" value="${dataN}">
             `
         }
         conteudo = conteudo + `
@@ -425,7 +438,7 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         {
             conteudo = conteudo + `
             <label for="inputAlt" class="form-label">Altura em cm:</label>
-            <input type="text" name="Altura" class="form-control" id="Altura" >    
+            <input type="text" name="Altura" class="form-control" id="Altura" value="${Altur}">    
             `
         }
         conteudo = conteudo + `
@@ -444,7 +457,7 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         {
             conteudo = conteudo + `
             <label for="sexo" class="form-label">gênero (sexo):</label>
-            <input type="text" name="sexo" class="form-control" id="sexo" >   
+            <input type="text" name="sexo" class="form-control" id="sexo" value="${sexo}" >   
             `
         }
        conteudo = conteudo + `
@@ -463,7 +476,7 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         {
             conteudo = conteudo + `
             <label for="posicao" class="form-label">Posição:</label>
-            <input type="text" name="posicao" class="form-control" id="posicao" >
+            <input type="text" name="posicao" class="form-control" id="posicao" value="${posicao}" >
             `
         }
         conteudo = conteudo + `
@@ -474,7 +487,7 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
             {
                 conteudo = conteudo + `
                 <label for="equip" class="form-label">Equip:</label>
-                <span class="text-danger">Por favor insira uma equip!</span>
+                <span class="text-danger">Por favor insira uma equipe!</span>
                 <select id="equipe" name="equipe" class="form-select" >
                 <option selected>Choose...</option>
                 <option>...</option>
@@ -485,7 +498,7 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         {
             conteudo = conteudo + `
             <label for="equip" class="form-label">Equip:</label>
-                <select id="equipe" name="equipe" class="form-select" >
+                <select id="equipe" name="equipe" class="form-select" value="${equipe}">
                 <option selected>Choose...</option>
                 <option>...</option>
                 </select>
@@ -495,7 +508,7 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         </div>
             <br>
             <div class="col-12">
-                <button type="submit" class="btn btn-primary">Sign in</button>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
             </div>
         </form>
 
@@ -506,6 +519,206 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         resposta.send(conteudo);
         resposta.end();
      }   
+});
+
+app.get("/cadastrarEquipe",verificarAutenticacao, (requisicao,resposta)=>{
+    resposta.send(`
+        <html lang="pt-br">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+                <title>Cadastrar Equipe</title>
+            </head>
+            <body>
+                <nav class="navbar bg-body-tertiary">
+                    <div class="container-fluid">
+                     <a class="navbar-brand d-flex align-items-center" href="/">
+                         <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
+                     Inicio
+                     </a>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                            <a class="nav-link btn btn-outline-danger rounded-pill px-3" href="/logout">Sair</a>
+                    </li>
+                </ul>   
+            </div>
+            </nav>
+        <br>
+        <form method="POST" action="/cadastrarEquipe" class="w-50 mx-auto border rounded shadow p-4">
+            <div class="col-md-6">
+                <label for="inputNome4" class="form-label">Nome da Equipe:</label>
+                <input type="text" name="equipe"class="form-control" id="equipe" >
+            </div>
+            <div class="col-12">
+                <label for="inputAlt" class="form-label">Nome do Técnico Responsável:</label>
+                <input type="text" name="nomeTec" class="form-control" id="nomeTec" >
+            </div>
+            <div class="col-md-4">
+                <label for="celular" class="form-label">Telefone do Técnico Responsável:</label>
+                <input type="tel" name="celular" class="form-control" id="celular" placeholder="(99) 99999-9999" pattern="\\(\\d{2}\\) \\d{5}-\\d{4}" required>
+                <div class="form-text">Formato esperado: (99) 99999-9999</div>
+            </div>
+            <br>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
+        </form>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    </body>
+    </html>`);
+    resposta.end();
+})
+
+app.post("/cadastrarEquipe",verificarAutenticacao,(requisicao,resposta)=>{
+    const nomeTec = requisicao.body.nomeTec;
+    const equipe = requisicao.body.equipe;
+    if(nomeTec && equipe)
+        {
+            listaEquipes.push({
+                equipe : equipe,
+                nomeTec : nomeTec
+            });
+            resposta.redirect("/listaEquipes")
+        }
+        else
+        {
+            let conteudo = `
+            <html lang="pt-br">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+                <title>Cadastrar Equipe</title>
+            </head>
+            <body>
+                <nav class="navbar bg-body-tertiary">
+                    <div class="container-fluid">
+                     <a class="navbar-brand d-flex align-items-center" href="/">
+                         <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
+                     Inicio
+                     </a>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                            <a class="nav-link btn btn-outline-danger rounded-pill px-3" href="/logout">Sair</a>
+                    </li>
+                </ul>   
+            </div>
+            </nav>
+        <br>
+        <form method="POST" action="/cadastrarEquipe" class="w-50 mx-auto border rounded shadow p-4">
+            <div class="col-md-6">
+            `
+            if(!equipe)
+                {
+                    conteudo = conteudo + `
+                    <label for="inputNome4" class="form-label">Nome da Equipe:</label>
+                    <input type="text" name="equipe"class="form-control" id="equipe" >
+                    <span class="text-danger">Por favor insira o nome da equipe!</span>
+                    `
+                }
+            else
+            {
+                conteudo = conteudo + `
+                <label for="inputNome4" class="form-label">Nome da Equipe:</label>
+                <input type="text" name="equipe"class="form-control" id="equipe" value="${equipe}" >
+                `
+            }
+            conteudo = conteudo +`
+            </div>
+            <div class="col-12">
+            `
+            if(!nomeTec)
+                {
+                    conteudo = conteudo + `
+                    <label for="inputAlt" class="form-label">Nome do Técnico Responsável:</label>
+                    <input type="text" name="nomeTec" class="form-control" id="nomeTec" >
+                    <span class="text-danger">Por favor insira o nome do Tecnico Responsavel!</span>
+                    `
+                }
+            else
+            {
+                conteudo = conteudo +`
+                <label for="inputAlt" class="form-label">Nome do Técnico Responsável:</label>
+                <input type="text" name="nomeTec" class="form-control" id="nomeTec" velue="${nomeTec}" >
+                `
+            }
+            conteudo = conteudo +`
+           </div>
+            <div class="col-md-4">
+                <label for="celular" class="form-label">Telefone do Técnico Responsável:</label>
+                <input type="tel" name="celular" class="form-control" id="celular" placeholder="(99) 99999-9999" pattern="\\(\\d{2}\\) \\d{5}-\\d{4}" required>
+                <div class="form-text">Formato esperado: (99) 99999-9999</div>
+            </div>
+            <br>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
+        </form>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    </body>
+    </html>
+            `
+        resposta.send(conteudo);
+        resposta.end();
+        }
+})
+
+app.get("/listaEquipes", verificarAutenticacao ,(requisicao,resposta) =>{
+    let conteudo=`<html lang="pt-br">
+    <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+                <title>Lista de Equipes</title>
+            </head>
+            <body>
+    <nav class="navbar bg-body-tertiary">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
+        Inicio
+        </a>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+                    <a class="nav-link btn btn-outline-danger rounded-pill px-3"  href="/logout">Sair</a>
+            </li>
+        </ul>   
+    </div>
+    </nav>
+    <div class="container w-75 mb-10 mt-10">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Nome</th>
+                    <th scope="col"> Tecnico Responsavel</th>
+                </tr>
+            </thead>
+                <tbody>`;
+            for(let i= 0; i<listaEquipes.length; i++)
+                {
+                    conteudo = conteudo+ `
+                    <tr>
+                        <td>${listaEquipes[i].nomeJ}</td>
+                        <td>${listaEquipes[i].numCamisa}</td>
+                        <td>${listaEquipes[i].posicao}</td>`
+                }
+
+        conteudo = conteudo + `</tbody>
+         </table>
+          <div class="d-flex justify-content-between mt-4">
+             <a href="/cadastrarEquipe" class="btn btn-primary">Cadastrar Novamente</a>
+             <a href="/Menu" class="btn btn-secondary">Voltar ao Menu</a>
+         </div>
+            </div>
+        </body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    </body>
+    </html>`
+resposta.send(conteudo);
+    resposta.end();
 });
 
 function verificarAutenticacao(requisicao,resposta, next)
