@@ -388,6 +388,15 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
         }
      else
      {
+        let opcoesEquipes = `<option selected disabled>Selecione uma equipe...</option>`;
+        for (let i = 0; i < listaEquipes.length; i++) {
+            if (listaEquipes[i].equipe === equipe) {
+                opcoesEquipes += `<option value="${listaEquipes[i].equipe}" selected>${listaEquipes[i].equipe}</option>`;
+            } else {
+                opcoesEquipes += `<option value="${listaEquipes[i].equipe}">${listaEquipes[i].equipe}</option>`;
+            }
+        }
+
         let conteudo = `<html lang="pt-br">
             <head>
                 <meta charset="UTF-8">
