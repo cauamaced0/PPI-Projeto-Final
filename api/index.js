@@ -782,9 +782,7 @@ app.get("/logout", (requisicao,resposta) =>{
 
 app.use(express.static('public'));
 
-app.listen(port, host, ()=> {
-    console.log("Servidor escutando na porta 4200")
-});
+export default app;
 
 console.log(`──▄────▄▄▄▄▄▄▄────▄───
 ─▀▀▄─▄█████████▄─▄▀▀──
