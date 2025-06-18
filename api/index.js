@@ -274,6 +274,7 @@ resposta.send(conteudo);
 });
 
 app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
+    res.set('Cache-Control', 'no-store');
     let opcoesEquipes = `<option selected disabled>Selecione uma equipe...</option>`;
     for (let i = 0; i < listaEquipes.length; i++) {
         opcoesEquipes += `<option value="${listaEquipes[i].equipe}">${listaEquipes[i].equipe}</option>`;
