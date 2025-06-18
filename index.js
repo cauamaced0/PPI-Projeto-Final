@@ -122,10 +122,6 @@ app.post("/", (requisicao, resposta)=>{
         const dataHoraAtual = new Date();
         resposta.cookie('ultimoLogin', dataHoraAtual.toLocaleString(), { maxAge: 1000 *60 * 30});
         resposta.redirect("/Menu");
-    listaUsuarios.push({
-        nome: nome,
-        email: email
-    });
         }
         else{
         
@@ -274,13 +270,242 @@ app.get("/cadastrarJogador",verificarAutenticacao, (requisicao,resposta)=>{
                 </ul>   
             </div>
             </nav>
-        
-
+        <br>
+        <form method="POST" action="/cadastrarJogador" class="w-50 mx-auto border rounded shadow p-4">
+            <div class="col-md-6">
+                <label for="inputNome4" class="form-label">Nome do jogador:</label>
+                <input type="name" name="nomeJ"class="form-control" id="nomeJ" >
+            </div>
+            <div class="col-md-6">
+                <label for="inputnum4" class="form-label">número do jogador (n° da camisa)</label>
+                <input type="text" nome="numCamisa" class="form-control" id="numCamisa" >
+            </div>
+            <div class="col-12">
+                <label for="date" class="form-label">Data de Nascimento:</label>
+                <input type="date" name="data" class="form-control" id="data" >
+            </div>
+            <div class="col-12">
+                <label for="inputAlt" class="form-label">Altura em cm:</label>
+                <input type="text" name="Altura" class="form-control" id="Altura" >
+            </div>
+            <div class="col-md-6">
+                <label for="sexo" class="form-label">gênero (sexo):</label>
+                <input type="text" name="sexo" class="form-control" id="sexo" >
+            </div>
+            <div class="col-md-2">
+                <label for="posicao" class="form-label">Posição:</label>
+                <input type="text" name="posicao" class="form-control" id="posicao" >
+            </div>
+            <div class="col-md-4">
+                <label for="equip" class="form-label">Equip:</label>
+                <select id="equipe" name="equipe" class="form-select" >
+                <option selected>Choose...</option>
+                <option>...</option>
+                </select>
+            </div>
+            <br>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Sign in</button>
+            </div>
+        </form>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
     </body>
     </html>`)
     resposta.end();
+});
+
+app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
+    const nomeJ = requisicao.body.nomeJ;
+    const numJ = requisicao.body.numCamisa;
+    const dataN = requisicao.body.data;
+    const Altur = requisicao.body.Altura;
+    const sexo = requisicao.body.sexo;
+    const posicao = requisicao.body.posicao;
+    const equipe = requisicao.body.equipe;
+    if(nomeJ && numJ && dataN > "31-12-1955" &&dataN < "18-6-2025" && Altura && Altur && sexo && posicao && equipe){
+        resposta.redirect("/listaUsuarios");
+        listaUsuarios.push({
+        nome: nome,
+        email: email
+    });
+        }
+     else
+     {
+        let conteudo = `<html lang="pt-br">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+                <title>Cadastrar Jogador</title>
+            </head>
+            <body>
+                <nav class="navbar bg-body-tertiary">
+                    <div class="container-fluid">
+                     <a class="navbar-brand d-flex align-items-center" href="/">
+                         <img src="/img/Logo.png" alt="Logo" width="50" height="50" class="d-inline-block align-text-top me-2">
+                     Inicio
+                     </a>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                            <a class=""nav-link btn btn-outline-danger rounded-pill px-3" " href="/logout">Sair</a>
+                    </li>
+                </ul>   
+            </div>
+            </nav>
+        <br>
+        <form method="POST" action="/cadastrarJogador" class="w-50 mx-auto border rounded shadow p-4">
+            <div class="col-md-6">`
+            if(!nomeJ)
+                {
+                    conteudo= conteudo + `
+                    <label for="inputNome4" class="form-label">Nome do jogador:</label>
+                    <input type="name" name="nomeJ"class="form-control" id="nomeJ" >
+                    <span class="text-danger">Por favor informe o nome!</span>
+                    `
+                }
+            else
+            {
+                conteudo = conteudo + `
+                <label for="inputNome4" class="form-label">Nome do jogador:</label>
+                <input type="name" name="nomeJ"class="form-control" id="nomeJ" value="${nomeJ}">    
+                `
+            }
+            conteudo= conteudo + `
+            </div>
+            <div class="col-md-6">
+            `
+            if(!numJ|| isNaN(numJ))
+                {
+                    conteudo = conteudo + `
+                    <label for="inputnum4" class="form-label">número do jogador (n° da camisa)</label>
+                    <input type="text" name="numCamisa" class="form-control" id="numCamisa" >
+                    <span class="text-danger">Por favor informe o numero da camisa!</span>
+                    `
+                }
+            else
+            {
+                conteudo = conteudo + `
+                <label for="inputnum4" class="form-label">número do jogador (n° da camisa)</label>
+                <input type="text" name="numCamisa" class="form-control" id="numCamisa" value="${numJ}" >
+                `
+            }
+            conteudo = conteudo + `
+            </div>
+            <div class="col-12">
+            `
+        if(!dataN)
+            {
+                conteudo = conteudo + `
+                <label for="date" class="form-label">Data de Nascimento:</label>
+                <input type="date" name="data" class="form-control" id="data">
+                <span class="text-danger">Por favor insira uma data de nascimento valida!</span>
+                `
+            }
+        else
+        {
+            conteudo = conteudo + `
+            <label for="date" class="form-label">Data de Nascimento:</label>
+            <input type="date" name="data" class="form-control" id="data">
+            `
+        }
+        conteudo = conteudo + `
+        </div>
+        <div class="col-12">
+        `
+        if(!Altur)
+            {
+                conteudo = conteudo + `
+                <label for="inputAlt" class="form-label">Altura em cm:</label>
+                <input type="text" name="Altura" class="form-control" id="Altura" >
+                <span class="text-danger">Por favor insira uma altura!</span>
+                `
+            }
+        else
+        {
+            conteudo = conteudo + `
+            <label for="inputAlt" class="form-label">Altura em cm:</label>
+            <input type="text" name="Altura" class="form-control" id="Altura" >    
+            `
+        }
+        conteudo = conteudo + `
+        </div>
+        <div class="col-md-6">
+        `
+        if(!sexo)
+            {
+                conteudo = conteudo + `
+                <label for="sexo" class="form-label">gênero (sexo):</label>
+                <input type="text" name="sexo" class="form-control" id="sexo" >
+                <span class="text-danger">Por favor insira um genero!</span>
+                `
+            }
+        else
+        {
+            conteudo = conteudo + `
+            <label for="sexo" class="form-label">gênero (sexo):</label>
+            <input type="text" name="sexo" class="form-control" id="sexo" >   
+            `
+        }
+       conteudo = conteudo + `
+        </div>
+        <div class="col-md-2">
+       ` 
+       if(!posicao)
+        {
+             conteudo = conteudo + `
+              <label for="posicao" class="form-label">Posição:</label>
+            <input type="text" name="posicao" class="form-control" id="posicao" >
+            <span class="text-danger">Por favor insira uma posicao!</span>
+             `
+        }
+        else
+        {
+            conteudo = conteudo + `
+            <label for="posicao" class="form-label">Posição:</label>
+            <input type="text" name="posicao" class="form-control" id="posicao" >
+            `
+        }
+        conteudo = conteudo + `
+        </div>
+        <div class="col-md-4">
+        `
+        if(!equipe)
+            {
+                conteudo = conteudo + `
+                <label for="equip" class="form-label">Equip:</label>
+                <span class="text-danger">Por favor insira uma equip!</span>
+                <select id="equipe" name="equipe" class="form-select" >
+                <option selected>Choose...</option>
+                <option>...</option>
+                </select>
+                `
+            }
+        else
+        {
+            conteudo = conteudo + `
+            <label for="equip" class="form-label">Equip:</label>
+                <select id="equipe" name="equipe" class="form-select" >
+                <option selected>Choose...</option>
+                <option>...</option>
+                </select>
+            `
+        }
+        conteudo = conteudo + `
+        </div>
+            <br>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Sign in</button>
+            </div>
+        </form>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    </body>
+    </html>
+        `
+        resposta.send(conteudo);
+        resposta.end();
+     }   
 });
 
 function verificarAutenticacao(requisicao,resposta, next)
