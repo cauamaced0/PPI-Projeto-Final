@@ -530,18 +530,20 @@ app.post("/cadastrarJogador",verificarAutenticacao,(requisicao,resposta)=>{
             {
                 conteudo = conteudo + `
                 <label for="equip" class="form-label">Equip:</label>
-                <span class="text-danger">Por favor insira uma posicao!</span>
+                <span class="text-danger">Por favor insira uma equipe!</span>
                 <select id="equipe" name="equipe" class="form-select" >
-                ${opcoesEquipes}
+                <option selected>Choose...</option>
+                <option>...</option>
                 </select>
                 `
             }
         else
         {
             conteudo = conteudo + `
-                <label for="equip" class="form-label">Equip:</label>
-                <select id="equipe" name="equipe" class="form-select" >
-                ${opcoesEquipes}
+            <label for="equip" class="form-label">Equip:</label>
+                <select id="equipe" name="equipe" class="form-select" value="${equipe}">
+                <option selected>Choose...</option>
+                <option>...</option>
                 </select>
             `
         }
